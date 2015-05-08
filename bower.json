@@ -1,0 +1,28 @@
+{
+  "name": "qty",
+  "version": "0.3.1",
+  "authors": [],
+  "description": "Parse, validate, manipulate and display physical dimensions.",
+  "main": [
+    "qty.js"
+  ],
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.7.0",
+    "angular": ">=1.2.0"
+  },
+  "devDependencies": {
+      "angular-mocks": ">=1.2.0"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "qty",
+  "version": "0.3.1",
+  "description": "Parse, validate, manipulate, and display physical dimensions.",
+  "main": "qty.js",
+  "engines": {
+    "node": ">=0.10.32",
+    "npm": ">=1.4.28"
+  },
+  "scripts": {
+    "test": "grunt test",
+    "postinstall": "bower install --config.interactive=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolaspanel/qty.git"
+  },
+  "keywords": [
+    "length",
+    "area",
+    "volume",
+    "mass"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicolaspanel/qty/issues"
+  },
+  "homepage": "https://github.com/nicolaspanel/qty",
+  "dependencies": {
+    "underscore": "^1.7.0"
+  },
+  "devDependencies": {
+    "coveralls": "~2.11.0",
+    "expect.js": "^0.3.1",
+    "grunt": "~0.4.4",
+    "grunt-cli": "^0.1.13",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-exec": "~0.4.2",
+    "grunt-karma": "^0.9.0",
+    "grunt-simple-mocha": "~0.4.0",
+    "istanbul": "~0.3.2",
+    "jasmine": "^2.2.1",
+    "jasmine-core": "^2.2.0",
+    "karma": "^0.12.31",
+    "karma-jasmine": "^0.3.5",
+    "karma-mocha-reporter": "latest",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "load-grunt-tasks": "~0.6.0",
+    "mocha": "~1.21.4",
+    "mocha-lcov-reporter": "0.0.1",
+    "phantomjs": "^1.9.7-15"
+  }
+}

@@ -1,0 +1,15 @@
+lib-cov
+npm-debug.log
+node_modules
+bower_components
+build
+.idea
+
+# vagrant
+Vagrantfile
+.vagrant
+
+*.min.js
+coverage/
+
+.idea
