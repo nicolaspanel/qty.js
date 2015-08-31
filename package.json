@@ -1,6 +1,6 @@
 {
   "name": "qty",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parse, validate, manipulate, and display physical dimensions.",
   "main": "qty.js",
   "engines": {
@@ -8,8 +8,7 @@
     "npm": ">=1.4.28"
   },
   "scripts": {
-    "test": "grunt test",
-    "postinstall": "bower install --config.interactive=false"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
