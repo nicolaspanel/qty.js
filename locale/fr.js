@@ -11,7 +11,7 @@
 }(function (Qty) {
     return Qty.defineLocale('fr', {
         units: {
-            /* prefixes rem ain the same */
+            /* prefixes remain the same */
 
             /* length units */
             '<meter>': ['m', 'mètre', 'mètres'],
