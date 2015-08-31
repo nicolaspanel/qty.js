@@ -7,3 +7,6 @@ node_js:
   - "iojs-2"
 script:
   - grunt travis
+before_script:
+  - npm install -g bower
+  - bower install
