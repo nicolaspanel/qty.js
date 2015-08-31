@@ -316,6 +316,7 @@ __Qty.js__ was inspired by (and heavily borrowed from) :
 The MIT License
 
 Copyright (c) 2015 SEN.SE
+
 Copyright (c) 2015 Nicolas Panel
 
 
