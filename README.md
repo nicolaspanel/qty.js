@@ -1,7 +1,7 @@
 Parse, manipulate, format and validate physical dimensions.
 
 [![NPM](https://nodei.co/npm/qty.png)](https://nodei.co/npm/qty/)
-[![Build Status](https://travis-ci.org/nicolaspanel/qty.js.png)](https://travis-ci.org/nicolaspanel/qty.js) [![Coverage Status](https://coveralls.io/repos/nicolaspanel/qty.js/badge.png?branch=master)](https://coveralls.io/r/nicolaspanel/qty.js?branch=master)
+[![Build Status](https://travis-ci.org/nicolaspanel/qty.js.png)](https://travis-ci.org/nicolaspanel/qty.js) [![Coverage Status](https://coveralls.io/repos/nicolaspanel/qty.js/badge.png)](https://coveralls.io/r/nicolaspanel/qty.js)
 
 # Install
 
