@@ -16,20 +16,19 @@ describe('Speed' , function () {
     it('should evaluate numerical input as 1 m/s', function () {
         expect(Qty.Speed(1).convertToSI().value()).to.be(1);
     });
-    it('can convert m/s to km/h', function () {
-        expect(Qty.Speed(10).convertTo('km/h').value()).to.be(36);
-    });
-    it('can convert km/h to mph', function () {
-        expect(Qty.Speed('120km/h').convertTo('mph').value()).to.be(120/1.609344);
+    describe('kph', function () {
+        it('can be obtain from m/s', function () {
+            expect(Qty.Speed(10).convertTo('km/h').value()).to.be(36);
+        });
+        it('can be converted to mph', function () {
+            expect(Qty.Speed('120km/h').to('mph').value()).to.be(120/1.609344);
+        });
+        it('can be obtained from division by hour', function () {
+             expect(Qty('1km').by('1h').format()).to.be('1kph');
+        });
     });
 
     describe('mph', function () {
-        it('can be obtain from Joule', function () {
-            expect(Qty('4184.00J').to('Cal').value()).to.be(1);
-        });
-        it('can be converted to joule', function () {
-            expect(Qty('1Cal').toSI().value()).to.be(4184);
-        });
         it('should be a speed', function () {
             expect(Qty('100 mph').isSpeed()).to.be.ok();
         });
@@ -41,6 +40,9 @@ describe('Speed' , function () {
         });
         it('can be formatted with long unity', function () {
             expect(Qty('100 mph').format('0 U')).to.be('100 miles per hour');
+        });
+        it('can be obtained from division by hour', function () {
+            expect(Qty('1mile').by('1h').format()).to.be('1mph');
         });
     });
 });

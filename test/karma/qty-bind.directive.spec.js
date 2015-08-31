@@ -50,6 +50,16 @@
             scope.$digest();
             expect(element.text()).toBe('3.14l');
         });
+        it('should support conversion when unit resolve to null', function(){
+            scope.value = {
+                format: '0',
+                qty: 2
+            };
+            var element = angular.element('<span qty-bind="value.qty" qty-unit="value.unity" qty-format="value.format"></span>');
+            element = $compile(element)(scope);
+            scope.$digest();
+            expect(element.text()).toBe('2');
+        });
 
 
     });

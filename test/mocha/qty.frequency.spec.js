@@ -17,6 +17,10 @@ describe('Frequency' , function () {
         expect(Qty.Frequency(1).toSI().value()).to.be(1);
     });
 
+    it('can be obtain from scalar divided by second', function () {
+        expect(Qty(1).by('1s').format()).to.be('1Hz');
+    });
+
     describe('MHz', function () {
         it('can be obtain from Hertz', function () {
             expect(Qty('1e6Hz').to('MHz').value()).to.be(1);

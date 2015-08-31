@@ -12,7 +12,7 @@ describe('Mass', function(){
         expect(zero.value()).to.be(0);
         expect(zero.isMass()).to.be.ok();
     });
-    describe('kilometers', function () {
+    describe('kilograms', function () {
         it('can be obtained form string', function () {
             expect(Qty(2.5, 'kg').isMass()).to.be.ok();
             expect(Qty('2.5kg').isMass()).to.be.ok();
@@ -42,6 +42,7 @@ describe('Mass', function(){
             expect(Qty('2.5kg').to('g').value()).to.be(2500);
         });
     });
+
     describe('pounds', function () {
         it('can be obtained from kg', function () {
             expect(Qty('1kg').to('pounds').value()).to.be(1/0.45359237);

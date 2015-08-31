@@ -1,6 +1,6 @@
 {
   "name": "qty",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Parse, validate, manipulate, and display physical dimensions.",
   "main": "qty.js",
   "engines": {
@@ -13,21 +13,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nicolaspanel/qty.git"
+    "url": "https://github.com/nicolaspanel/qty.js.git"
   },
   "keywords": [
     "length",
     "area",
     "volume",
-    "mass"
+    "mass",
+    "parse",
+    "manipulate",
+    "display",
+    "physical dimensions",
+    "dimensions",
+    "conversion",
+    "speed"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nicolaspanel/qty/issues"
+    "url": "https://github.com/nicolaspanel/qty.js/issues"
   },
-  "homepage": "https://github.com/nicolaspanel/qty",
+  "homepage": "https://github.com/nicolaspanel/qty.js",
   "dependencies": {
-    "underscore": "^1.7.0"
+    "lodash": "^3.10.1"
   },
   "devDependencies": {
     "coveralls": "~2.11.0",

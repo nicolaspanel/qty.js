@@ -4,15 +4,18 @@ Parse, manipulate, format and validate physical dimensions.
 
 ## Browser
 
-Install qty.js and [underscore](http://underscorejs.org/) using bower:
+__NOTE__: __qty.js__ depends on Lodash (or underscore.js). 
+
+Install __qty.js__ using bower:
 ```shell
-$ bower install --save qty underscore
+$ bower install --save qty
 ```
 
-Include  underscore.js and qty.js in your application:
+
+Include  qty.js in your application:
 ```html
-<script src="components/underscore/underscore.js"></script>
-<script src="components/qty/qty.js"></script>
+<script src="components/underscore/underscore.js"></script> <!-- or <script src="components/lodash/lodash.js"></script> --> 
+<script src="components/qty/min/qty.min.js"></script>
 ```
 
 
@@ -21,7 +24,7 @@ For [angularjs](https://angularjs.org/) support:
  - Add reference to `angular-qty.js` 
  
 ```html
-<script src="components/underscore/underscore.js"></script>
+<script src="components/underscore/underscore.js"></script> <!-- or <script src="components/lodash/lodash.js"></script> --> 
 <script src="components/angular/angular.js"></script>
 <script src="components/qty/qty.js"></script>
 <script src="components/qty/angular-qty.js"></script>
@@ -34,13 +37,13 @@ For [angularjs](https://angularjs.org/) support:
  ```
 
 
-Note: for minified versions see :
- - min/qty.min.js: ~25kB
+Note:
+ - min/qty.min.js: ~20kB
  - min/angular-qty.min: ~1kB
  - min/locale/*.min.js: ~2kB each
 
 
-## node (compatible but not deployed yet)
+## nodejs or iojs
 
 ```shell
 $ npm install --save qty
@@ -49,6 +52,7 @@ $ npm install --save qty
 ```js
 var Qty = require('qty');
 ```
+
 
 # Basic usage
 
@@ -63,6 +67,7 @@ Qty('1MB').value();                 // 1
 
 ## Manipulate
 
+### Conversions
 ```js
 Qty('2.54cm').to('inch').value();   // 1
 Qty('1 oz').toSI().value();         // 0.0283... 
@@ -70,7 +75,36 @@ Qty('100 mph').to('km/h').value();  // 160.934...
 Qty('1MiB').to('bit').value();      // 8388608 (=== 8 x 2²⁰)
 ```
 
-Note: `Qty#toSI` function refers to [International System of Units](http://en.wikipedia.org/wiki/International_System_of_Units).
+__Note__: 
+ * `Qty#toSI` function refers to [International System of Units](http://en.wikipedia.org/wiki/International_System_of_Units).
+ * Both quantities must have the same [dimensions](#dimensions)
+
+ 
+### Additions
+``js
+Qty('1m').add(1, 'km').format('0u') // 1001m
+``
+
+
+### Subtractions
+``js
+Qty('1m').subtract('2km').format('0u') // -1999m
+``
+
+
+### Multiplications
+``js
+Qty('2m').times('2m').format('0u') // 4m^2
+Qty('2m').times('2m').isArea()     // true
+``
+
+
+### Divisions
+``js
+Qty('1m').by('1s').format('0u') // 1m/s
+Qty('1m').by('1s').isSpeed()    // true
+``
+
 
 ## Format
 
@@ -200,6 +234,7 @@ Supported dimensions are :
 
 
 ## Angular
+
 ## qtyBind directive
 The `qty-bind` attribute tells angular to replace the text content of the 
 specified HTML element with the formatted value of the `qty`
@@ -249,6 +284,15 @@ qty    | expression  | Can be a `Qty`, a `String` or a `Number`
 format | string      | See [Doc / formats](#formats)
 
 
+# Tests
+
+```sh
+grunt test
+```
+
+__Note__: use` grunt exec:coveralls` for coverage report
+
+
 # Credits
 
 Qty.js was inspired by (and heavily borrowed from) :
@@ -257,4 +301,16 @@ Qty.js was inspired by (and heavily borrowed from) :
  - [js-quantities](http://gentooboontoo.github.io/js-quantities/)
 
 
+# License
 
+The MIT License
+
+Copyright (c) 2015 SEN.SE
+Copyright (c) 2015 Nicolas Panel
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

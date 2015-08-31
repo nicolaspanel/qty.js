@@ -40,7 +40,7 @@
             '<century>': ['siècle', 'siècle', 'siècles'],
 
             /* speed */
-            '<kph>': ['kph', 'Kilomètre heure', 'Kilomètres heure'],
+            '<kph>': ['km/h', 'Kilomètre heure', 'Kilomètres heure', 'kph'],
             '<mph>': ['mph', 'Mille par heure', 'Milles par heure'],
             '<fps>': ['fps', 'Pied par seconde', 'Pieds par seconde'],
             /* acceleration */

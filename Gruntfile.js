@@ -34,7 +34,6 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 options: {
-                    mangle: false,
                     banner: '/*! <%= pkg.name %>#<%= pkg.version %> */\n'
                 },
                 files: {
@@ -58,8 +57,58 @@ module.exports = function (grunt) {
             }
         },
         karma: {
-            default: {
-                configFile: 'karma.conf.js'
+            options: {
+                frameworks: ['jasmine'],
+                reporters: ['dots'],
+                // web server port
+                port: 9876,
+                colors: true,
+                logLevel: 'WARN',
+                autoWatch: false,
+                browsers: ['PhantomJS'],
+                singleRun: true
+            },
+            min: {
+                options: {
+                    files: [
+                        'bower_components/underscore/underscore.js',
+                        'bower_components/angular/angular.js',
+                        // tested files
+                        'min/qty.min.js',
+                        'min/angular-qty.min.js',
+                        'min/locale/*.min.js',
+                        // test lib
+                        'bower_components/angular-mocks/angular-mocks.js',
+                        //tests files
+                        'test/karma/**/*.spec.js'
+                    ]
+                }
+            },
+            underscore: {
+                options: {
+                    files: [
+                        'bower_components/underscore/underscore.js',
+                        'bower_components/angular/angular.js',
+                        'qty.js',
+                        'angular-qty.js',
+                        'locale/*.js',
+                        'bower_components/angular-mocks/angular-mocks.js',
+                        'test/karma/**/*.spec.js'
+                    ]
+                }
+            },
+            lodash: {
+                options: {
+                    files: [
+                        'bower_components/lodash/lodash.js',
+                        'bower_components/angular/angular.js',
+                        'qty.js',
+                        'angular-qty.js',
+                        'locale/*.js',
+                        'bower_components/angular-mocks/angular-mocks.js',
+                        'test/karma/**/*.spec.js'
+                    ]
+                }
             }
         },
         exec: {
@@ -73,9 +122,8 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('deploy', ['test', 'copy:tag']);
     grunt.registerTask('build', ['uglify']);
-    grunt.registerTask('test', ['uglify', 'jshint', 'simplemocha:full', 'karma']);
+    grunt.registerTask('test', ['jshint', 'simplemocha:full', 'karma:underscore', 'karma:lodash', 'uglify', 'karma:min']);
     grunt.registerTask('travis', ['test', 'exec:coveralls']);
     grunt.registerTask('default', 'watch');
 };

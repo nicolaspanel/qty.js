@@ -12,16 +12,27 @@ describe('Acceleration' , function () {
         expect(zero.value()).to.be(0);
         expect(zero.isAcceleration()).to.be.ok();
     });
+
     it('should be properly formatted', function () {
         expect(Qty.Acceleration(Math.PI).format()).to.be('3.14m/s^2');
     });
+
     it('should evaluate numerical input as 1 m/s', function () {
         expect(Qty.Acceleration(1).value()).to.be(1);
     });
 
+    it('can be obtained from division by time', function () {
+        expect(Qty('1m').by('1s').by('1s').isAcceleration()).to.be.ok();
+    });
+
+    it('should become a speed when multiplied with time', function () {
+        expect(Qty('1m/s²').times('1s').isSpeed()).to.be.ok();
+    });
+
     describe('gee', function () {
+
         it('can be evaluated from m/s^2', function () {
-            expect(Qty.Acceleration(9.80665).convertTo('gee').value()).to.be(1);
+            expect(Qty.Acceleration(9.80665).convertTo('gee').format()).to.be('1gee');
         });
 
         it('can convert gee to m/s^2', function () {

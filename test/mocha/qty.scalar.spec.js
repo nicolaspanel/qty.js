@@ -41,8 +41,16 @@ describe('Scalar', function(){
     it('cannot be converted to Length', function () {
         var scalar = Qty.Scalar();
         expect(function () {
-            scalar.convertTo('m');
+                scalar.convertTo('m');
         }).to.throwError();
+    });
+
+    it('can be multiplied by another scalar', function () {
+        expect(Qty(1).times(2).format()).to.be('2');
+    });
+
+    it('can be divided by another scalar', function () {
+        expect(Qty(2).by(2).format()).to.be('1');
     });
 
     describe('percentage', function () {
@@ -74,7 +82,7 @@ describe('Scalar', function(){
         it('should remove optional zero at the end', function () {
             expect(Qty(1/2).format('0.[000]')).to.be('0.5');
         });
-        it('should properly display prefixes', function () {
+        it('should properly display unities', function () {
             expect(Qty('100 km/h').format()).to.be('100km/h');
         });
 

@@ -121,15 +121,15 @@
         '<century>'     :  [3155692600, DIMENSIONS.Duration, 'duration'],
 
         /* speed */
-        '<kph>'         :  [0.277777778, DIMENSIONS.Speed, 'speed'],
-        '<mph>'         :  [0.44704, DIMENSIONS.Speed, 'speed'],
-        '<knot>'        :  [0.514444444, DIMENSIONS.Speed, 'speed'],
-        '<fps>'         :  [0.3048, DIMENSIONS.Speed, 'speed'],
+        '<kph>'         :  [0.277777778, DIMENSIONS.Speed, 'speed', [['<kilo>', '<meter>'],['<hour>']]],
+        '<mph>'         :  [0.44704, DIMENSIONS.Speed, 'speed', [['<mile>'],['<hour>']]],
+        '<knot>'        :  [0.514444444, DIMENSIONS.Speed, 'speed', [['<naut-mile>'],['<hour>']]],
+        '<fps>'         :  [0.3048, DIMENSIONS.Speed, 'speed', [['<foot>'],['<second>']]],
         /* acceleration */
         '<gee>'         :  [9.80665, DIMENSIONS.Acceleration, 'acceleration'],
 
         /* mass */
-        '<kilogram>'    :  [1.0, DIMENSIONS.Mass, 'mass'],
+        '<kilogram>'    :  [1.0, DIMENSIONS.Mass, 'mass', [['<kilo>'],['<gram>']]],
         '<metric-ton>'  :  [1000, DIMENSIONS.Mass, 'mass'],
         '<carat>'       :  [0.0002, DIMENSIONS.Mass, 'mass'],
         '<pound>'       :  [0.45359237, DIMENSIONS.Mass, 'mass'],
@@ -189,7 +189,7 @@
         /* force */
         '<newton>'      : [1.0, DIMENSIONS.Force, 'force'],
         /* frequency */
-        '<hertz>'       : [1.0, DIMENSIONS.Frequency, 'frequency'],
+        '<hertz>'       : [1.0, DIMENSIONS.Frequency, 'frequency', [[],['<second>']]],
 
         /* angle */
         '<radian>'      : [1.0, DIMENSIONS.Angle, 'angle'],
@@ -204,14 +204,14 @@
         '<horsepower>'  : [745.699872, DIMENSIONS.Power, 'power'],
 
         /* other */
-        '<%>'           : [0.01, DIMENSIONS.Percentage, 'percentage'],
+        '<%>'           : [0.01, DIMENSIONS.Percentage, 'percentage']
     };
 
     /*******************************
      *          Utils
      ******************************/
     var __hasModule = (typeof module !== 'undefined' && module.exports);
-    var __ = __hasModule? require('underscore'): _;
+    var __ = __hasModule? require('lodash'): _;
     var stringFormat = (function() {
         /* jshint ignore:start */
         var __slice = [].slice;
@@ -368,7 +368,7 @@
             });
         };
     })();
-    function getQty(input){
+    function getValue(input){
         var match = QTY_STRING_REGEX.exec(input),
             q = match[1];
         return parseFloat((q || '0').replace(/\s/g, ''));
@@ -436,6 +436,7 @@
         PREFIXED_UNIT_MATCH, PREFIXED_UNIT_MATCH_REGEX;
 
     var UNIT_FORMAT_REGEX = /(?:(\S+))(?:(\s+))?(?:(u|U))/;
+
     /*******************************
      *          Unit class
      ******************************/
@@ -452,8 +453,55 @@
             this.den = __.isString(dim[1])? [dim[1]]: dim[1] || [];
         }
     }
+    Unit.prototype.cleanup = function () {
+        var self = this;
+       // rm duplicated units
+        var counts = {
+            num: __.countBy(this.num, function(u){ return u;}),
+            den: __.countBy(this.den, function(u){ return u;})
+        };
+
+        var reduced = __
+            .reduce(__.union(this.num, this.den), function (memo, u) {
+                var n = counts.num[u] || 0,
+                    d = counts.den[u] || 0,
+                    reduced ={
+                        num:  n > d ? n - d : 0,
+                        den: d > n? d - n: 0
+                    };
+                memo.num = memo.num.concat(__.range(reduced.num).map(function(){ return u; }));
+                memo.den = memo.den.concat(__.range(reduced.den).map(function(){ return u; }));
+                return memo;
+            }, {num: [], den: []});
+
+        // look for higher level units (ex: kph, mph...)
+        var higher = __.chain(UNITS)
+            .pairs()
+            .reject(function (pair) { return !pair[1][3]; })
+            .find(function (pair) {
+                var unitNum = pair[1][3][0];
+                var unitDen = pair[1][3][1];
+                return (
+                    self.num.length === unitNum.length &&
+                    self.den.length === unitDen.length &&
+                    __.isEmpty(__.difference(self.num, unitNum)) &&
+                    __.isEmpty(__.difference(unitNum, self.num)) &&
+                    __.isEmpty(__.difference(self.den, unitDen)) &&
+                    __.isEmpty(__.difference(unitDen, self.den)));
+            }).value();
+        if (higher){
+            this.num = [higher[0]];
+            this.den = [];
+        }
+        else{
+            this.num = reduced.num || [];
+            this.den = reduced.den || [];
+        }
+    };
+
     Unit.prototype.dim = function () {
-        var numDims = __.chain(this.num)
+        var numDims = __
+            .chain(this.num)
             .reject(function(u){ return  u === BASES.Percentage; })
             .reduce(function (memo, u) {
                 var baseDim = UNITS[u][1];
@@ -475,29 +523,26 @@
             .value();
 
         var counts = {
-            num: __(numDims[0].concat(denDims[0])).countBy(function(u){ return u;}),
-            den: __(numDims[1].concat(denDims[1])).countBy(function(u){ return u;})
+            num: __.countBy(numDims[0].concat(denDims[0]), function(u){ return u;}),
+            den: __.countBy(numDims[1].concat(denDims[1]), function(u){ return u;})
         };
 
-        var reduced = __.chain(__.union(numDims[0], numDims[1], denDims[0], denDims[1]))
-            .map(function (u) {
+        var reduced = __
+            .reduce(__.union(numDims[0], numDims[1], denDims[0], denDims[1]), function (memo, u) {
                 var n = counts.num[u] || 0,
                     d = counts.den[u] || 0,
-                    reduced ={ num:  n > d ? n - d : 0, den: d > n? d - n: 0};
-                return [
-                    ['num', __.range(reduced.num).map(function(){ return u; })],
-                    ['den', __.range(reduced.den).map(function(){ return u; })]
-                ];
-            })
-            .flatten(true)
-            .reduce(function(memo, item){
-                memo[item[0]] = memo[item[0]] || [];
-                memo[item[0]] = memo[item[0]].concat(item[1]);
+                    reduced ={
+                        num:  n > d ? n - d : 0,
+                        den: d > n? d - n: 0
+                    };
+                memo.num = memo.num.concat(__.range(reduced.num).map(function(){ return u; }));
+                memo.den = memo.den.concat(__.range(reduced.den).map(function(){ return u; }));
                 return memo;
-            }, {})
-            .value();
+            }, {num: [], den: []});
+
         return new Unit([reduced.num || [], reduced.den || []]);
     };
+
     Unit.prototype.compatibleWith = function(dimension){
         var selfDim = this.dim();
         var expected = Unit.get(dimension);
@@ -510,9 +555,9 @@
             __.isEmpty(__.difference(selfDim.den, expectedDim.den)) &&
             __.isEmpty(__.difference(expectedDim.den, selfDim.den)) );
     };
+
     Unit.prototype.assertCompatibleWith = function(input){
         var inputUnit = Unit.get(input);
-
         if (!this.compatibleWith(inputUnit)) {
             var selfDim = this.dim();
             var expectedDim = inputUnit.dim();
@@ -522,8 +567,9 @@
             }));
         }
     };
+
     Unit.prototype.computeSI = function(q){
-        if (this.compatibleWith(Unit(DIMENSIONS.Temperature))){
+        if (this.compatibleWith(new Unit(DIMENSIONS.Temperature))){
             if (this.num.length !== 1 || this.den.length > 0){
                 // TODO: manage case where multiple conversion required
                 throw new Error('not supported');
@@ -537,12 +583,13 @@
                 return conversion[0](q);
             }
         }
-        var num = __(this.num).reduce(function(memo, u){ return memo * UNITS[u][0]; },1),
-            den = __(this.den).reduce(function(memo, u){ return memo * UNITS[u][0]; },1);
+        var num = __.reduce(this.num, function(memo, u){ return memo * UNITS[u][0]; },1),
+            den = __.reduce(this.den, function(memo, u){ return memo * UNITS[u][0]; },1);
         return q * num / den;
     };
+
     Unit.prototype.computeValue = function(si){
-        if (this.compatibleWith(Unit(DIMENSIONS.Temperature))){
+        if (this.compatibleWith(new Unit(DIMENSIONS.Temperature))){
             // TODO: manage case where multiple conversion required
             if (this.num.length !== 1 || this.den.length > 0){
                 throw new Error('not supported');
@@ -556,8 +603,8 @@
                 return conversion[1](si);
             }
         }
-        var num = __(this.num).reduce(function(memo, u){ return memo * UNITS[u][0]; },1),
-            den = __(this.den).reduce(function(memo, u){ return memo * UNITS[u][0]; },1);
+        var num = __.reduce(this.num, function(memo, u){ return memo * UNITS[u][0]; },1),
+            den = __.reduce(this.den, function(memo, u){ return memo * UNITS[u][0]; },1);
         return si * den / num;
     };
 
@@ -615,6 +662,15 @@
         }
     };
 
+    Unit.prototype.extend = function (unit) {
+        this.num = this.num.concat(unit.num);
+        this.den = this.den.concat(unit.den);
+        this.cleanup();
+    };
+    Unit.prototype.inv = function(){
+        return new Unit([this.den, this.num]);
+    };
+
     var PARSED_UNITS_CACHE = {};
     Unit.get = function (input) {
         if (input instanceof Unit){
@@ -623,6 +679,7 @@
         else if (!__.isString(input)) {
             input = (input || '').toString();
         }
+        input = input.replace('²', '^2');
         var match = QTY_STRING_REGEX.exec(input),
             top = match[2],
             bottom = match[3];
@@ -721,10 +778,14 @@
             u = Unit.get(unit);
         }
         this._u = u;
-        this._si = u.computeSI(getQty(input || 0), u);
+        this._si = u.computeSI(getValue(input || 0));
     }
     Qty.prototype.value = Qty.prototype.valueOf = function () {
         return this._u.computeValue(this._si);
+    };
+
+    Qty.prototype.siValue = Qty.prototype.valueOf = function () {
+        return this._si;
     };
 
     Qty.prototype.format = function(format){
@@ -737,6 +798,7 @@
             unit: this._u.format(format, plural)
         }).trim();
     };
+    Qty.prototype.toString = Qty.prototype.format;
 
     Qty.prototype.convertTo =  function(unit){
         var newUnit = Unit.get(unit);
@@ -753,12 +815,19 @@
     Qty.prototype.clone  = function(){
         return Qty(this.value(), new Unit([this._u.num, this._u.den]));
     };
-    Qty.new = function(input, unit){
-        return new Qty(input, unit);
+    Qty.new = function(){
+        return Qty.apply(null, arguments);
     };
 
-    Qty.prototype.compatibleWith = function(dimension){
-        return this._u.compatibleWith(dimension);
+    Qty.prototype.unit = function(){
+        return this._u;
+    };
+
+    Qty.prototype.compatibleWith = function(input){
+        if (input instanceof Qty){
+            return this._u.compatibleWith(input._u.dim());
+        }
+        return this._u.compatibleWith(input);
     };
     // shorcut for each dimension
     __.keys(DIMENSIONS).forEach(function(dim){
@@ -768,12 +837,47 @@
         };
         Qty[dim] = function(input, unit){
             var q = new Qty(input, unit || new Unit(DIMENSIONS[dim]));
-            if (!q.compatibleWith(Unit(DIMENSIONS[dim]))){
-                throw Error(stringFormat('"{0}" cannot be interpreted as a {1}', input, dim));
+            if (!q.compatibleWith(new Unit(DIMENSIONS[dim]))){
+                throw new Error(stringFormat('"{0}" cannot be interpreted as a {1}', input, dim));
             }
             return q;
         };
     });
+
+    Qty.prototype.add = function(){
+        var q = Qty.apply(null, arguments);
+        if (!this.compatibleWith(q)){
+            throw new Error(stringFormat('cannot add {} to {} (not compatible)', q.format(), this.format()));
+        }
+        this._si += q.toSI();
+        return this;
+    };
+
+    Qty.prototype.subtract = function(){
+        var q = Qty.apply(null, arguments);
+        if (!this.compatibleWith(q)){
+            throw new Error(stringFormat('cannot subtract {} from {} (not compatible)', q.format(), this.format()));
+        }
+        this._si -= q.toSI();
+        return this;
+    };
+
+    Qty.prototype.times = function(){
+        var q = Qty.apply(null, arguments);
+        this._si *= q.siValue();
+        this._u.extend(q.unit());
+        return this;
+    };
+
+    Qty.prototype.by = function(){
+        var q = Qty.apply(null, arguments);
+        if (q.siValue() === 0){
+            throw new Error(stringFormat('Cannot divide by zero.'));
+        }
+        this._si /= q.siValue();
+        this._u.extend(q.unit().inv());
+        return this;
+    };
 
     /*******************************
      *        LOCALE manager
@@ -847,7 +951,7 @@
         '<century>'     : ['century','century','centuries'],
 
         /* speed */
-        '<kph>'         : ['kph', 'kilometer per hour', 'kilometers per hour'],
+        '<kph>'         : ['kph', 'kilometer per hour', 'kilometers per hour', 'km/h'],
         '<mph>'         : ['mph', 'mile per hour', 'miles per hour'],
         '<knot>'        : ['kt','knot','knots','kn','kts'],
         '<fps>'         : ['fps', 'foot per second', 'feet per second'],
@@ -929,7 +1033,7 @@
         '<watt>'        : ['W','watt','watts','Watt','Watts'],
         '<horsepower>'  : ['hp','horsepower','horsepower','Horsepower'],
         /* other */
-        '<%>'           : ['%','percent','percents'],
+        '<%>'           : ['%','percent','percents']
     };
     var DEFAULT_FORMAT_OPTIONS = {
         thousands: ',',
@@ -947,6 +1051,7 @@
         }
     };
     var CURRENT_LOCALE = 'en';
+
     Qty.defineLocale  = function (key, values) {
         if (!__.isString(key) || !__.isObject(values)){
             throw new Error('bad arguments');

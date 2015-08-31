@@ -25,7 +25,7 @@ angular.module('qty', [])
 
                 scope.$watch(function () {
                     var val = scope.$eval(attrs.qtyBind) || 0;
-                    var unit = scope.$eval(attrs.qtyUnit) || 0;
+                    var unit = scope.$eval(attrs.qtyUnit) || null;
                     var qty = Qty(val, unit);
 
                     if (attrs.qtyConvertTo){
