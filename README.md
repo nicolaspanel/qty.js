@@ -1,6 +1,6 @@
 Parse, manipulate, format and validate physical dimensions.
 
-[![Build Status](https://travis-ci.org/nicolaspanel/qty.js.png)](https://travis-ci.org/nicolaspanel/qty.js) [![Coverage Status](https://coveralls.io/repos/nicolaspanel/qty.js/badge.png)](https://coveralls.io/r/nicolaspanel/qty.js)
+[![Build Status](https://travis-ci.org/nicolaspanel/qty.js.png)](https://travis-ci.org/nicolaspanel/qty.js) [![Coverage Status](https://coveralls.io/repos/nicolaspanel/qty.js/badge.png)](https://coveralls.io/r/nicolaspanel/qty.js) [![Bower version](https://badge.fury.io/bo/qty.svg)](http://badge.fury.io/bo/qty) [![npm version](https://badge.fury.io/js/qty.svg)](http://badge.fury.io/js/qty) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 # Install
 
